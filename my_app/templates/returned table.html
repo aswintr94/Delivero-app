@@ -1,0 +1,165 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<div class="content-wrapper" style="width: max-content;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header" >
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Returned items</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right" >
+              
+            </ol>
+          </div>
+        </div>
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+
+    <div class="card">
+        <div class="card-header">
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Sl No</th>
+                    <th>Created by</th>
+                    <th>Returned date</th>
+                    <th>Returned time</th>
+                    <th>Task created date</th>
+                    <th>Task ID</th>
+                    <th>Order ID</th>
+                    <th>Driver code</th>
+                    <th>Invoice number</th>
+                    <th>Customer name</th>
+                    <th>Client name</th>
+                    <th>Reason</th>
+                    <th>Comment</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    {% if request.session.status == "super admin" %}
+                    <th>Upload Additional Documents</th>
+                    <th>Additional Documents</th>
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in data %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{i.creator}}</td>
+                    <td>{{i.returned_date}}</td>
+                    <td>{{i.returned_time}}</td>
+                    <td>{{i.task_created_date}}</td>
+                    <td>{{i.task_id}}</td>
+                    <td>{{i.order_id}}</td>
+                    <td>{{i.driver_code}}</td>
+                    <td>{{i.invoice_no}}</td>
+                    <td>{{i.customer_name}}</td>
+                    <td>{{i.client_name}}</td>
+                    <td>{{i.reason}}</td>
+                    <td>{{i.comment}}</td>
+                    <td>{{i.latitude}}</td>
+                    <td>{{i.longitude}}</td>
+                    {% if request.session.status == "super admin" %}
+                    <td>
+                      <form id="doc_upload_form" method="post">
+                        {% csrf_token %}
+                        <input type="file" name="return doc">
+                        <input type="hidden" name="t_id" id="" value="{{i.task_id}}">
+                        <input type="submit" name="" id="" value="Upload">
+                      </form>
+                    </td>
+                    
+                    <td>
+                      {% for docu in doc %}
+                      {% if docu.return_item_details.task_id == i.task_id %}
+                          
+                            <button class="btn btn-primary">
+                              <i class="fas fa-paperclip"></i>
+                              <a style="color: white;" href="{{docu.document.url}}">{{docu.document.url}}</a>
+                            </button>
+                            <a href="{% url 'delete_return_docs' id=docu.id %}" onclick="return confirm('Are you sure you want to delete?');">
+                              <i style="margin-left: 1em;" class="fas fa-times"></i>
+                            </a> 
+                            <br>
+                          
+                      {% endif %}
+                      {% endfor %}
+                    </td>
+                    <td>
+                      <div class="row">
+                        <a href="{% url 'return_to_pending' t_id=i.task_id %}"><button type="button" class="btn btn-primary">Return</button></a>
+                        <a href="{% url 'delete_returned_item' t_id=i.task_id %}"><button type="button" class="btn btn-danger" style="margin-left: 1em;">Delete</button></a>
+                      </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+
+
+<script>
+  $("#doc_upload_form").validate({
+      normalizer: function(value) {
+          return $.trim(value);
+      },
+      rules: {
+
+          
+      },
+
+      submitHandler: function(form) {
+          var form = document.getElementById('doc_upload_form');
+          var data = new FormData(form);
+          $.ajax({
+              type: "POST",
+              url: "{% url 'upload_return_doc' %}",
+              data,
+              dataType: "json",
+              cache: false,
+              contentType: false,
+              processData: false,
+              success: function(data) {
+                  if (data.error == 1) {
+                      $("#modal-dialog").html('Server response');
+                      $("#success_message").html(data.message);
+                      $('#modal-success').modal({
+                          backdrop: 'static',
+                          keyboard: false
+                      })
+
+    
+                      setTimeout(function() {
+                          window.location.replace("{% url 'returned_tasks' %}");
+                      }, 1000);
+
+                  } else {
+
+                      $("#modal-dialog").html('Server response');
+                      $("#danger_message").html(data.message);
+                      $('#modal-danger').modal({
+                          backdrop: 'static',
+                          keyboard: false
+                      })
+
+                  }
+              }
+          });
+          return false;
+      }
+  });
+</script>
+
+{% endblock %}

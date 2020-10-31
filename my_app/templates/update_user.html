@@ -1,0 +1,187 @@
+{% extends 'index.html' %}
+
+    {% block content %}
+        <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Updation</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Update user</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- left column -->
+          <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-primary">
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form id="adminupdateForm" action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+                  <div class="form-group">
+                    <label for="InputName1">Name</label>
+                    <input type="text" name="name" class="form-control" id="InputName1" placeholder="Enter your name" value="{{user_data.name}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="InputEmail1">Email</label>
+                    <input type="email" name="email" class="form-control" id="InputEmail1" placeholder="Enter email" value="{{user_data.email}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="InputUsername1">Username</label>
+                    <input type="text" name="username" class="form-control" id="InputUsername1" placeholder="Enter a username" value="{{user_data.username}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="InputPassword1">Password</label>
+                    <input type="password" name="password" class="form-control" id="InputPassword1" placeholder="Enter a password" value="{{user_data.password}}">
+                  </div>
+                  <div>
+                    <input type="hidden" name="user_id" value="{{user_data.id}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="">Select status</label>
+                   {% if user_data.status == 'super admin' %}
+                    <div style="margin-left: 1em;">
+                    <input class="form-check-input" type="radio" name="admin" value="super admin" checked>
+                    <label class="form-check-label">Super Admin</label>
+                    </div>
+                  
+                    <div style="margin-left: 1em;">
+                    <input class="form-check-input" type="radio" name="admin" value="admin" >
+                    <label class="form-check-label">Admin</label>
+                    </div>
+                  {% else %}
+                  <div style="margin-left: 1em;">
+                    <input class="form-check-input" type="radio" name="admin" value="super admin">
+                    <label class="form-check-label">Super Admin</label>
+                    </div>
+                  
+                    <div style="margin-left: 1em;">
+                    <input class="form-check-input" type="radio" name="admin" value="admin"  checked>
+                    <label class="form-check-label">Admin</label>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputImage">Upload Image</label>
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input type="file" class="custom-image-input" id="InputImage" name="image">
+                        <img src="{{user_data.image.url}}" alt="No image" width="100px" height="100px">
+                      </div>
+                      <!-- <div class="input-group-append">
+                        <span class="input-group-text">Upload</span>
+                      </div> -->
+                    </div>
+                  </div>
+                  <!-- <div class="form-group mb-0">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" name="terms" class="custom-control-input" id="exampleCheck1">
+                      <label class="custom-control-label" for="exampleCheck1">I agree to the <a href="#">terms of service</a>.</label>
+                    </div>
+                  </div> -->
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+            </div>
+          <!--/.col (left) -->
+          <!-- right column -->
+          <div class="col-md-6">
+
+          </div>
+          <!--/.col (right) -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+   
+
+  
+    
+    <script>
+        $("#adminupdateForm").validate({
+            normalizer: function(value) {
+                return $.trim(value);
+            },
+            rules: {
+                name: {
+                  required: true
+                },
+                email: {
+                  required: true
+                },
+                username: {
+                  required: true
+                },
+                password: {
+                  required: true
+                },
+                admin: {
+                  required: true
+                }
+            },
+    
+            submitHandler: function(form) {
+                var form = document.getElementById('adminupdateForm');
+                var data = new FormData(form);
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'user_update_submit' %}",
+                    data,
+                    dataType: "json",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        if (data.error == 1) {
+                            $("#modal-dialog").html('Server response');
+                            $("#success_message").html(data.message);
+                            $('#modal-success').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            })
+    
+         
+                            setTimeout(function() {
+                                window.location.replace("{% url 'admin_list' %}");
+                            }, 1000);
+    
+                        } else {
+    
+                            $("#modal-dialog").html('Server response');
+                            $("#danger_message").html(data.message);
+                            $('#modal-danger').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            })
+    
+                        }
+                    }
+                });
+                return false;
+            }
+        });
+    </script>
+
+    {% endblock %}

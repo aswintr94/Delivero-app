@@ -1,0 +1,163 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>Driver details</h1>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="#">Driver</a></li>
+                  <li class="breadcrumb-item active">Drivers</li>
+                </ol>
+              </div>
+            </div>
+          </div><!-- /.container-fluid -->
+        </section>
+
+        {% if messages %}
+        {% for msg in messages %}
+          <div class="alert alert-info alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            {{msg.message}}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+
+    <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Driver List</h3>
+                </div>
+                <div class="row">
+                  <div class="col-md-11">
+                    <!-- Search form -->
+                    <form action="{% url 'search_driver' %}" method="POST">
+                      {% csrf_token %}
+                      <div class="row float-right" style="margin:1em">
+                        <div>
+                        <input name="search" class="form-control" type="text" placeholder="Search" aria-label="Search" style="width: min-content; margin-right: 10px;">
+                        </div>
+                        <div>
+                          <button type="submit" class="btn"><i class="fa fa-search"></i></button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                  <table id="example2" class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                      <th>Sl.No</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Email</th>
+                      <th>Mobile</th>
+                      <th>Username</th>
+                      <th>Driver ID</th>
+                      <th>Update/Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    
+                    {% for driver in datas %}                   
+                    <tr>
+                        
+                        <td>{{forloop.counter}}</td>
+                        <td>{{driver.first_name}}</td>
+                        <td>{{driver.last_name}}</td>
+                        <td>{{driver.email}}</td>
+                        <td>{{driver.mobile}}</td>
+                        <td>{{driver.username}}</td>
+                        <td>{{driver.driver_id}}</td>
+                        <td>
+                          <div class="row">
+                          <a href="{% url 'update_driver' d_id=driver.id %}"><i style="padding: 3px;" class="fas fa-user-edit fa-2x"></i></a>
+                          
+                            <form action="{% url 'delete_driver' d_id=driver.id %}" id="delete_driver" method="POST" >
+                              {% csrf_token %}
+
+                              <button onclick="return ConfirmDelete();" type="submit" value="Delete"><i style="color: dodgerblue;" class="fas fa-minus-circle fa-2x"></i></button>
+                            </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="text-center"><td colspan="8"><b> Driver not found </b></td></tr>
+                    {% endfor %}
+                   
+                    </tbody>
+                    <tfoot>
+                      
+                      <tr>
+                        <th>Sl.No</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Username</th>
+                        <th>Driver ID</th>
+                        <th>Update/Delete</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <!-- /.card-body -->
+                
+                <div style="float:left;">
+                  Showing {{ datas.start_index}} to {{ datas.end_index }} of {{ datas.paginator.count }}
+                  </div>
+                  <div style="float:left;">
+                  {% if datas.has_other_pages %}
+                  <ul class="pagination pagination-sm m-0 float-right">
+                  {% if datas.has_previous %}
+                  <li class="page-item" style="box-sizing: border-box;"><a class="page-link" href="?page={{ datas.previous_page_number }}">&laquo;</a></li>
+                  {% else %}
+                  <li class="page-item" style="box-sizing: border-box;"><span>&laquo;</span></li>
+                  {% endif %} {% for i in datas.paginator.page_range %} {% if datas.number == i %}
+                  <li  class="page-item" style="box-sizing: border-box;"><span>{{ i }} <span class="sr-only">(current)</span></span>
+                  </li>
+                  {% else %}
+                  
+                  <li class="page-item" style="box-sizing: border-box;"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %} {% endfor %} {% if datas.has_next %}
+                  <li class="page-item" style="box-sizing: border-box;"><a class="page-link" href="?page={{ datas.next_page_number }}">&raquo;</a></li>
+                  {% else %}
+                  <li class="page-item" style="box-sizing: border-box;"><span>&raquo;</span></li>
+                  {% endif %}
+                  </ul>
+                  {% endif %}
+                  </div>
+              </div>
+              <!-- /.card -->
+            </div>
+          </div>    
+        </div>
+      </section>
+  </div>
+
+
+              <script>
+                function ConfirmDelete()
+                {
+                  var x = confirm("Are you sure you want to delete?");
+                  if (x)
+                      return true;
+                  else
+                    return false;
+                }
+               </script>    
+           
+                            
+    {% endblock %}

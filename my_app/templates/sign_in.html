@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+</head>
+
+<body class="hold-transition login-page">
+    <div class="login-box">
+      <div class="login-logo">
+        <a href=""><b> Delivero App </b></a>
+      </div>
+      <!-- /.login-logo -->
+      <div class="card">
+        <div class="card-body login-card-body">
+          <p class="login-box-msg">Sign in to start your session</p>
+    
+          <form id="Sign-in-form" action="" method="post">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+              <input type="text" name="username" class="form-control" placeholder="Username">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-user"></span>
+                </div>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <input type="password" name="password" class="form-control" placeholder="Password">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-4 m-auto">
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+              </div>
+              <!-- /.col -->
+            </div>
+          </form>
+        </div>
+        <!-- /.login-card-body -->
+      </div>
+    </div>
+    <!-- /.login-box -->
+    
+    <!-- Success Modal -->
+    <div class="modal fade" id="modal-success">
+        <div class="modal-dialog">
+          <div class="modal-content bg-success">
+            <div class="modal-header">
+              <h4 class="modal-title">Success Modal</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p id="success_message"></p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-outline-light">Save changes</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+
+    <!-- Danger Modal -->
+    <div class="modal fade" id="modal-danger">
+        <div class="modal-dialog">
+          <div class="modal-content bg-danger">
+            <div class="modal-header">
+              <h4 class="modal-title">Danger Modal</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p id="danger_message"></p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-outline-light">Save changes</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+
+    <!-- jQuery -->
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+    
+    <!-- json response -->
+   <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/jquery.validate.min.js"></script>
+
+    <script>
+        $("#Sign-in-form").validate({
+            normalizer: function(value) {
+                return $.trim(value);
+            },
+            rules: {
+    
+                username: {
+                  required: true
+                },
+                password: {
+                  required: true
+                }
+            },
+    
+            submitHandler: function(form) {
+                var form = document.getElementById('Sign-in-form');
+                var data = new FormData(form);
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'sign_in_check' %}",
+                    data,
+                    dataType: "json",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        if (data.error == 1) {
+                            $("#modal-dialog").html('Server response');
+                            $("#success_message").html(data.message);
+                            $('#modal-success').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            })
+                
+                            setTimeout(function() {
+                                window.location.replace("{% url 'home' %}");
+                            }, 1000);
+    
+                        } else {
+    
+                            $("#modal-dialog").html('Server response');
+                            $("#danger_message").html(data.message);
+                            $('#modal-danger').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            })
+    
+                        }
+                    }
+                });
+                return false;
+            }
+        });
+    </script>
+
+    
+
+</body>
+</html>

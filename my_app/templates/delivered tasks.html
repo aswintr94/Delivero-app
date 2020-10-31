@@ -1,0 +1,154 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<div class="content-wrapper" style="width: max-content;">
+    <!-- Content Header (Page header) -->
+    <section class="content-header" >
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Delivered tasks</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right" >
+              <!-- <li class="breadcrumb-item"><a href="#">Tasks</a></li>
+              <li class="breadcrumb-item active">Live tasks</li> -->
+            </ol>
+          </div>
+        </div>
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+
+    <div class="card">
+        <div class="card-header">
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Sl No</th>
+                    <th>Created by</th>
+                    <th>Delivered date</th>
+                    <th>Delivered time</th>
+                    <th>Task created date</th>
+                    <th>Task ID</th>
+                    <th>Srl no</th>
+                    <th>POD type</th>
+                    <th>ID card number</th>
+                    <th>Order ID</th>
+                    <th>Driver code</th>
+                    <th>Invoice number</th>
+                    <th>Customer name</th>
+                    <th>Client name</th>
+                    <th>Comment</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Proof Documents</th>
+                    <th>Upload Additional Documents</th>
+                    <th>Additional Documents</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for i in items %}
+                <tr>
+                      <td>{{forloop.counter}}</td>
+                      <td>{{i.creator}}</td>
+                      <td>{{i.delivered_date}}</td>
+                      <td>{{i.delivered_time}}</td>
+                      <td>{{i.task_created_date}}</td>
+                      <td>{{i.task_id}}</td>
+                      <td>{{i.serial_no}}</td>
+                      <td>{{i.pod_type}}</td>
+                      <td>{{i.id_card_no}}</td>
+                      <td>{{i.order_id}}</td>
+                      <td>{{i.driver_code}}</td>
+                      <td>{{i.invoice_no}}</td>
+                      <td>{{i.customer_name}}</td>
+                      <td>{{i.client_name}}</td>
+                      <td>{{i.comment}}</td>
+                      <td>{{i.latitude}}</td>
+                      <td>{{i.longitude}}</td>
+                      <td><a href="{% url 'view_documents' t_id=i.task_id %}">Click here</a></td>
+                      <td>
+                        <form id='delivery_docs_by_admin' enctype="multipart/form-data">
+                          {% csrf_token %}
+                          <input type="file" name="document" id="">
+                          <input type="hidden" name="task_id" id="" value="{{i.task_id}}">
+                          <input type="submit" value="Upload">
+                        </form>
+                      </td>
+                      {% for doc in doc %}
+                      {% if doc.task_details_id == i.id %}
+                      <td>
+                       <button class="btn btn-primary"><a style="color: white;" href="{{doc.document.url}}">{{doc.document.url}}</a></button>
+                       <a href="{% url 'delete_additional_delivery_doc' id=doc.id %}" onclick="return confirm('Are you sure that you want to delete?');">
+                        <i style="margin-left: 1em;" class="fas fa-times"></i>
+                       </a>
+                      </td>
+                      {% endif %}
+                      {% endfor %}
+                </tr>
+              {% endfor %}
+        </table>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+  $("#delivery_docs_by_admin").validate({
+      normalizer: function(value) {
+          return $.trim(value);
+      },
+      rules: {
+
+          
+      },
+
+      submitHandler: function(form) {
+          var form = document.getElementById('delivery_docs_by_admin');
+          var data = new FormData(form);
+          $.ajax({
+              type: "POST",
+              url: "{% url 'delivery_docs_by_admin' %}",
+              data,
+              dataType: "json",
+              cache: false,
+              contentType: false,
+              processData: false,
+              success: function(data) {
+                  if (data.error == 1) {
+                      $("#modal-dialog").html('Server response');
+                      $("#success_message").html(data.message);
+                      $('#modal-success').modal({
+                          backdrop: 'static',
+                          keyboard: false
+                      })
+
+    
+                      setTimeout(function() {
+                          window.location.replace("{% url 'delivered_tasks' %}");
+                      }, 1000);
+
+                  } else {
+
+                      $("#modal-dialog").html('Server response');
+                      $("#danger_message").html(data.message);
+                      $('#modal-danger').modal({
+                          backdrop: 'static',
+                          keyboard: false
+                      })
+
+                  }
+              }
+          });
+          return false;
+      }
+  });
+</script>
+
+{% endblock %}

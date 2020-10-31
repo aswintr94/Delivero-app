@@ -1,0 +1,132 @@
+{% extends 'index.html' %}
+
+  {% block content %}
+    
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Add Tasks</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item">Tasks</li>
+              <li class="breadcrumb-item active">Add Tasks</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- left column -->
+          <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-primary">
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form id="quickForm1" action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+                  <div class="form-group">
+                    <label for="addtasksfile1">Choose File</label>
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input type="file" class="custom-image-input" id="InputFile" name="task_file">
+                        <input type="hidden" name="admin" value="{{request.session.name}}">
+                      </div>
+                      <!-- <div class="input-group-append">
+                        <span class="input-group-text">Upload</span>
+                      </div> -->
+                    </div>
+                  </div>
+                  <!-- <div class="form-group mb-0">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" name="terms" class="custom-control-input" id="exampleCheck1">
+                      <label class="custom-control-label" for="exampleCheck1">I agree to the <a href="#">terms of service</a>.</label>
+                    </div>
+                  </div> -->
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+            </div>
+          <!--/.col (left) -->
+          <!-- right column -->
+          <div class="col-md-6">
+
+          </div>
+          <!--/.col (right) -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+
+
+  <script>
+    $("#quickForm1").validate({
+      normalizer: function(value) {
+          return $.trim(value);
+      },
+      rules: {
+          task_file: {
+              required: true
+          }
+      },
+
+      submitHandler: function(form) {
+          var form = document.getElementById('quickForm1');
+          var data = new FormData(form);
+          $.ajax({
+              type: "POST",
+              url: "{% url 'upload_tasks' %}",
+              data,
+              dataType: "json",
+              cache: false,
+              contentType: false,
+              processData: false,
+              success: function(data) {
+                  if (data.error == 1) {
+                      $("#modal-dialog").html('Server response');
+                      $("#success_message").html(data.message);
+                      $('#modal-success').modal({
+                          backdrop: 'static',
+                          keyboard: false
+                      })
+
+                   
+
+                  } else {
+
+                      $("#modal-dialog").html('Server response');
+                      $("#danger_message").html(data.message);
+                      $('#modal-danger').modal({
+                          backdrop: 'static',
+                          keyboard: false
+                      })
+
+                  }
+              }
+          });
+          return false;
+      }
+  });
+
+
+  </script>
+
+  {% endblock %}
+
+

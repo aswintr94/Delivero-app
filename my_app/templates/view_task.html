@@ -1,0 +1,112 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header" >
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1></h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right" >
+              <!-- <li class="breadcrumb-item"><a href="#">Tasks</a></li>
+              <li class="breadcrumb-item active">Live tasks</li> -->
+            </ol>
+          </div>
+        </div>
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h2 style="color: darkred"><u> Order details({{details.order_id}})</u> </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 mr-auto">
+            <a href="{% url 'live_tasks_table' %}"><i class="fas fa-arrow-circle-left fa-lg" style="margin-left: 1em;"> Go back</i></a>
+        </div>
+        <div class="col-md-3 ml-auto" style="width: auto; height: auto; background-color: lightcoral;">
+            <h4>Created by: {{details.admin_id.name}}</h4>
+        </div>
+    </div>
+    <table class="table table-bordered " style="margin: 1em;">
+        <tbody class="text-center">
+            <tr>
+                <td>Order ID: </td>
+                <td>{{details.order_id}}</td>
+            </tr>
+            <tr>
+                <td>Invoice no:</td>
+                <td>{{details.invoice_no}}</td>
+            </tr>
+            <tr>
+                <td>Date of order</td>
+                <td>{{details.date}}</td>
+            </tr>
+            <tr>
+                <td>Product</td>
+                <td>{{details.product}}</td>
+            </tr>
+            <tr>
+                <td>Driver Code</td>
+                <td>{{details.driver_code}}</td>
+            </tr>
+            <tr>
+                <td>Customer name</td>
+                <td>{{details.customer_name}}</td>
+            </tr>
+            <tr>
+                <td>Customer address</td>
+                <td>{{details.customer_address}}</td>
+            </tr>
+            <tr>
+                <td>Customer mobile</td>
+                <td>{{details.customer_mobile}}</td>
+            </tr>
+            <tr>
+                <td>Altername mobile</td>
+                <td>{{details.alt_contact_no}}</td>
+            </tr>
+            <tr>
+                <td>Shipping name</td>
+                <td>{{details.shipping_name}}</td>
+            </tr>
+            <tr>
+                <td>District</td>
+                <td>{{details.district}}</td>
+            </tr>
+            <tr>
+                <td>Pincode</td>
+                <td>{{details.pin_code}}</td>
+            </tr>
+            <tr>
+                <td>Client</td>
+                <td>{{details.client}}</td>
+            </tr>
+            <tr>
+                <td>Preference</td>
+                <td>{{details.preference}}</td>
+            </tr>
+            <tr>
+                <td>Status</td>
+                <td>{{details.status}}</td>
+            </tr>
+            <tr>
+                <td>Latitude</td>
+                <td>{{details.latitude}}</td>
+            </tr>
+            <tr>
+                <td>Longitude</td>
+                <td>{{details.longitude}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

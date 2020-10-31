@@ -1,0 +1,184 @@
+{% extends 'index.html' %}
+
+    {% block content %}
+
+      <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Driver Update</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Driver Update</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- left column -->
+          <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-primary">
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form id="quickForm" action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div>
+                        <!-- Driver id -->
+                        <input type="hidden" name="driver_id" value="{{driver.id}}">
+                    </div>
+                  <div class="form-group">
+                    <label for="InputName1">First Name</label>
+                    <input type="text" name="first_name" class="form-control" id="InputName1" placeholder="Enter your first name" value="{{driver.first_name}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="InputName2">Last Name</label>
+                    <input type="text" name="last_name" class="form-control" id="InputName2" placeholder="Enter your last name" value="{{driver.last_name}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="InputEmail1">Email</label>
+                    <input type="email" name="email" class="form-control" id="InputEmail1" placeholder="Enter your email id" value="{{driver.email}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="InputMobile1">Mobile</label>
+                    <input type="number" name="mobile" class="form-control" id="InputMobile1" placeholder="Enter your mobile number" value="{{driver.mobile}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="InputUsername1">Username</label>
+                    <input type="text" name="username" class="form-control" id="InputUsername1" placeholder="Enter a username" value="{{driver.username}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="InputPassword1">Password</label>
+                    <input type="password" name="password" class="form-control" id="InputPassword1" placeholder="Enter a password" value="{{driver.password}}">
+                  </div>
+                  <!-- <div class="form-group">
+                    <label for="exampleInputImage">Upload Image</label>
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input type="file" class="custom-image-input" id="InputImage" name="image">
+                      </div>
+                      <!-- <div class="input-group-append">
+                        <span class="input-group-text">Upload</span>
+                      </div> -->
+                    </div>
+                  </div>
+                  <!-- <div class="form-group mb-0">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" name="terms" class="custom-control-input" id="exampleCheck1">
+                      <label class="custom-control-label" for="exampleCheck1">I agree to the <a href="#">terms of service</a>.</label>
+                    </div>
+                  </div> -->
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+            </div>
+          <!--/.col (left) -->
+          <!-- right column -->
+          <div class="col-md-6">
+
+          </div>
+          <!--/.col (right) -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+
+
+
+  <script>
+    jQuery.validator.addMethod("accept", function(value, element, param) {
+      return value.match(new RegExp("^" + param + "$"));
+    },'please enter a valid username')
+
+    jQuery.validator.addMethod("npattern", function(value, element, param) {
+      return this.optional(element) || /^.*(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/i.test(value);
+    },"Username are 8-16 characters with uppercase letters, lowercase letters and at least one number and one special charcter.")
+
+    $("#quickForm").validate({
+      normalizer: function(value) {
+          return $.trim(value);
+      },
+      rules: {
+
+          first_name: {
+              required: true
+          },
+          last_name: {
+            required: true
+          },
+          email: {
+            required: true
+          },
+          mobile: {
+            required: true
+          },
+          username: {
+            required: true,
+            npattern: true
+          },
+          password: {
+            required: true
+          }
+      },
+
+      submitHandler: function(form) {
+          var form = document.getElementById('quickForm');
+          var data = new FormData(form);
+          $.ajax({
+              type: "POST",
+              url: "{% url 'driver_data_update' %}",
+              data,
+              dataType: "json",
+              cache: false,
+              contentType: false,
+              processData: false,
+              success: function(data) {
+                  if (data.error == 1) {
+                      $("#modal-dialog").html('Server response');
+                      $("#success_message").html(data.message);
+                      $('#modal-success').modal({
+                          backdrop: 'static',
+                          keyboard: false
+                      })
+
+    
+                      setTimeout(function() {
+                          window.location.replace("{% url 'home' %}");
+                      }, 1000);
+
+                  } else {
+
+                      $("#modal-dialog").html('Server response');
+                      $("#danger_message").html(data.message);
+                      $('#modal-danger').modal({
+                          backdrop: 'static',
+                          keyboard: false
+                      })
+
+                  }
+              }
+          });
+          return false;
+      }
+  });
+  </script>
+
+    {% endblock %}
